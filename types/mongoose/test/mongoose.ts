@@ -1186,6 +1186,9 @@ schematype.validate(/re/)
   .validate({}, 'error')
   .validate(cb, 'try', 'tri');
 
+// SingleNestedPath
+STSchema.path('name').discriminator('foo', new mongoose.Schema({ foo: String }));
+
 /*
  * section promise.js
  * http://mongoosejs.com/docs/api.html#promise-js
@@ -1583,7 +1586,7 @@ var foobarSchema = new mongoose.Schema({
 });
 var Foobar = mongoose.model<Foobar, mongoose.Model<Foobar>>('AnimFoobarl', foobarSchema);
 Foobar.find({ _id: 123 });
-                                                     
+
 new mongoose.Schema({
   createdAt: Number,
   updatedAt: Number,

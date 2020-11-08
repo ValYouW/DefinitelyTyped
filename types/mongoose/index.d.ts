@@ -88,7 +88,7 @@ declare module "mongoose" {
   type NonFunctionPropertyNames<T> = {
     [K in keyof T]: T[K] extends Function ? never : K;
   }[keyof T];
-  
+
   type NonFunctionProperties<T> = Pick<T, NonFunctionPropertyNames<T>>;
 
   type IfEquals<X, Y, A, B> =
@@ -103,10 +103,10 @@ declare module "mongoose" {
 
   type MongooseBuiltIns = mongodb.ObjectID | mongodb.Decimal128 | Date | number | boolean;
 
-  type ImplicitMongooseConversions<T> = 
-    T extends MongooseBuiltIns 
+  type ImplicitMongooseConversions<T> =
+    T extends MongooseBuiltIns
       ? T extends (boolean | mongodb.Decimal128 | Date) ? T | string | number // accept numbers for these
-      : T | string 
+      : T | string
     : T;
 
   type DeepCreateObjectTransformer<T> =
@@ -121,15 +121,15 @@ declare module "mongoose" {
 
   // removes functions from schema from all levels
   type DeepCreateTransformer<T> =
-    T extends Map<infer KM, infer KV> 
+    T extends Map<infer KM, infer KV>
       // handle map values
       // Maps are not scrubbed, replace below line with this once minimum TS version is 3.7:
       // ? Map<KM, DeepNonFunctionProperties<KV>>
       ? { [key: string]: DeepCreateTransformer<KV> } | [KM, KV][] | Map<KM, KV>
-      : 
+      :
     T extends Array<infer U>
       ? Array<DeepCreateObjectTransformer<U>>
-      : 
+      :
     DeepCreateObjectTransformer<T>;
 
   // mongoose allows Map<K, V> to be specified either as a Map or a Record<K, V>
@@ -194,9 +194,9 @@ declare module "mongoose" {
 
   // ensure that if an empty document type is passed, we allow any properties
   // for backwards compatibility
-  export type CreateQuery<D> = HasJustId<CreateDocumentDefinition<D>> extends true 
-    ? { _id?: any } & Record<string, any> 
-    : D extends { _id: infer TId } 
+  export type CreateQuery<D> = HasJustId<CreateDocumentDefinition<D>> extends true
+    ? { _id?: any } & Record<string, any>
+    : D extends { _id: infer TId }
       ? mongodb.OptionalId<CreateDocumentDefinition<D> & { _id: TId }>
       : CreateDocumentDefinition<D>
 
@@ -942,7 +942,7 @@ declare module "mongoose" {
      * Sets a path (if arity 2)
      * Gets a path (if arity 1)
      */
-    path(path: string): SchemaType;
+    path(path: string): SingleNestedPath;
     path(path: string, constructor: any): this;
 
     /**
@@ -3137,6 +3137,23 @@ declare module "mongoose" {
      */
     validate(obj: RegExp | Function | any, errorMsg?: string,
       type?: string): this;
+  }
+
+
+  /*
+   * section schematype.js
+   * https://mongoosejs.com/docs/api.html#SingleNestedPath
+   */
+  class SingleNestedPath extends SchemaType {
+    constructor();
+
+    /**
+     * Adds a discriminator type.
+     * @param name discriminator model name
+     * @param schema discriminator model schema
+     * @param value the string stored in the `discriminatorKey` property
+     */
+    discriminator<U extends Document>(name: string, schema: Schema, value?: string): Model<U>;
   }
 
   /*
